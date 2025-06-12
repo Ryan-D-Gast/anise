@@ -1,5 +1,3 @@
-// include/blobstore.h
-
 #pragma once
 #include <memory>
 

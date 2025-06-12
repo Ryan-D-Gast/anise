@@ -3,7 +3,7 @@
 #[cxx::bridge]
 mod ffi {
     unsafe extern "C++" {
-        include!("anise-cpp/include/blobstore.h");
+        include!("anise-cpp/cpp/include/blobstore.h");
 
         type BlobstoreClient;
 

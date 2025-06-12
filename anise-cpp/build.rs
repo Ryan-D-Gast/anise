@@ -2,7 +2,7 @@
 
 fn main() {
     cxx_build::bridge("src/main.rs")
-        .file("src/blobstore.cpp")
+        .file("cpp/src/blobstore.cpp")
         .compile("anise-cpp");
 
     println!("cargo:rerun-if-changed=src/main.rs");
