@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.30.0)
 
 # Project configuration.
-project(mmscenegraph)
+project(anise)
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 6)
 set(PROJECT_VERSION_PATCH 1)
@@ -19,10 +19,10 @@ set(target_test_exe "anise_cpptests")
 
 # Add custom modules to the module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules)
-include(CxxDemoExampleUtils)
+include(CxxAnise)
 
 set_cxx_standard_cpp_11()
 
-add_subdirectory(src)
-add_subdirectory(include)
-add_subdirectory(tests)
+add_subdirectory(cpp/src)
+add_subdirectory(cpp/include)
+add_subdirectory(cpp/tests)

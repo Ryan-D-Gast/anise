@@ -2,6 +2,16 @@
     "python.formatting.provider": "yapf",
     "files.associations": {
         "functional": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "*.rs": "cpp",
+        "array": "cpp",
+        "bitset": "cpp",
+        "string_view": "cpp",
+        "initializer_list": "cpp",
+        "ranges": "cpp",
+        "span": "cpp",
+        "iterator": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp"
     }
 }
