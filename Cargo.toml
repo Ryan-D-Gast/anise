@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["anise", "anise-cli", "anise-gui", "anise-py", "anise/fuzz"]
+members = ["anise", "anise-cli", "anise-cpp", "anise-gui", "anise-py", "anise/fuzz"]
 
 [workspace.package]
 version = "0.6.1"
