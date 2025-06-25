@@ -4,12 +4,15 @@ import pickle
 
 from anise import Almanac, MetaAlmanac, MetaFile
 from anise.astro import *
-from anise.astro.constants import Frames
+from anise.constants import Frames
 from anise.rotation import DCM
 from anise.time import Duration, Epoch, TimeSeries, Unit
 from anise.utils import convert_tpc
 
 from os import environ
+
+# For compatibility with version 0.6.x, check we can import the constants from anise.astro as well
+from anise.astro.constants import Frames
 
 
 def test_state_transformation():
@@ -197,7 +200,7 @@ def test_convert_tpc():
     almanac = new_meta.process()
 
     earth_j2k = almanac.frame_info(Frames.EARTH_J2000)
-    assert earth_j2k.mu_km3_s2 != None
+    assert earth_j2k.mu_km3_s2 is not None
     almanac.describe()
 
 

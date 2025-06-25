@@ -30,6 +30,7 @@ mod python;
 
 #[derive(Debug, PartialEq, Snafu)]
 #[snafu(visibility(pub(crate)))]
+#[non_exhaustive]
 pub enum MetaAlmanacError {
     #[snafu(display("could not create the cache folder for ANISE, please use a relative path"))]
     AppDirError,
@@ -78,7 +79,7 @@ impl Almanac {
     /// Set autodelete to true to automatically delete lock files. Lock files are important in multi-threaded loads.
     ///
     ///
-    /// :type metafile: Metafile
+    /// :type metafile: MetaFile
     /// :type autodelete: bool
     /// :rtype: Almanac
     #[pyo3(name = "load_from_metafile")]

@@ -133,35 +133,38 @@ impl Almanac {
     ///
     /// Refer to [azimuth_elevation_range_sez] for details.
     ///
-    /// :type rx_tx_states: List[Orbit]
+    /// :type rx_tx_states: typing.List[Orbit]
     /// :type obstructing_body: Frame, optional
     /// :type ab_corr: Aberration, optional
-    /// :rtype: List[AzElRange]
+    /// :rtype: typing.List[AzElRange]
     #[pyo3(name = "azimuth_elevation_range_sez_many", signature=(
         rx_tx_states,
         obstructing_body=None, ab_corr=None
     ))]
     fn py_azimuth_elevation_range_sez_many(
         &self,
+        py: Python,
         rx_tx_states: Vec<(CartesianState, CartesianState)>,
         obstructing_body: Option<Frame>,
         ab_corr: Option<Aberration>,
     ) -> Vec<AzElRange> {
-        let mut rslt = rx_tx_states
-            .par_iter()
-            .filter_map(|(rx, tx)| {
-                self.azimuth_elevation_range_sez(*rx, *tx, obstructing_body, ab_corr)
-                    .map_or_else(
-                        |e| {
-                            println!("{e}");
-                            None
-                        },
-                        |aer| Some(aer),
-                    )
-            })
-            .collect::<Vec<AzElRange>>();
-        rslt.sort_by(|aer_a, aer_b| aer_a.epoch.cmp(&aer_b.epoch));
-        rslt
+        py.allow_threads(|| {
+            let mut rslt = rx_tx_states
+                .par_iter()
+                .filter_map(|(rx, tx)| {
+                    self.azimuth_elevation_range_sez(*rx, *tx, obstructing_body, ab_corr)
+                        .map_or_else(
+                            |e| {
+                                println!("{e}");
+                                None
+                            },
+                            |aer| Some(aer),
+                        )
+                })
+                .collect::<Vec<AzElRange>>();
+            rslt.sort_by(|aer_a, aer_b| aer_a.epoch.cmp(&aer_b.epoch));
+            rslt
+        })
     }
 
     /// Computes whether the line of sight between an observer and an observed Cartesian state is obstructed by the obstructing body.
@@ -273,9 +276,9 @@ impl Almanac {
     /// Refer to [solar_eclipsing] for details.
     ///
     /// :type eclipsing_frame: Frame
-    /// :type observers: List[Orbit]
+    /// :type observers: typing.List[Orbit]
     /// :type ab_corr: Aberration, optional
-    /// :rtype: List[Occultation]
+    /// :rtype: typing.List[Occultation]
     #[pyo3(name = "solar_eclipsing_many", signature=(
         eclipsing_frame,
         observers,
@@ -283,25 +286,28 @@ impl Almanac {
     ))]
     fn py_solar_eclipsing_many(
         &self,
+        py: Python,
         eclipsing_frame: Frame,
         observers: Vec<Orbit>,
         ab_corr: Option<Aberration>,
     ) -> Vec<Occultation> {
-        let mut rslt = observers
-            .par_iter()
-            .filter_map(|observer| {
-                self.solar_eclipsing(eclipsing_frame, *observer, ab_corr)
-                    .map_or_else(
-                        |e| {
-                            println!("{e}");
-                            None
-                        },
-                        |aer| Some(aer),
-                    )
-            })
-            .collect::<Vec<Occultation>>();
-        rslt.sort_by(|aer_a, aer_b| aer_a.epoch.cmp(&aer_b.epoch));
-        rslt
+        py.allow_threads(|| {
+            let mut rslt = observers
+                .par_iter()
+                .filter_map(|observer| {
+                    self.solar_eclipsing(eclipsing_frame, *observer, ab_corr)
+                        .map_or_else(
+                            |e| {
+                                println!("{e}");
+                                None
+                            },
+                            |aer| Some(aer),
+                        )
+                })
+                .collect::<Vec<Occultation>>();
+            rslt.sort_by(|aer_a, aer_b| aer_a.epoch.cmp(&aer_b.epoch));
+            rslt
+        })
     }
 
     /// Computes the Beta angle (β) for a given orbital state, in degrees. A Beta angle of 0° indicates that the orbit plane is edge-on to the Sun, leading to maximum eclipse time. Conversely, a Beta angle of +90° or -90° means the orbit plane is face-on to the Sun, resulting in continuous sunlight exposure and no eclipses.
@@ -368,7 +374,7 @@ impl Almanac {
     /// :type observer_frame: Frame
     /// :type time_series: TimeSeries
     /// :type ab_corr: Aberration, optional
-    /// :rtype: List[Orbit]
+    /// :rtype: typing.List[Orbit]
     #[pyo3(name = "transform_many", signature=(
         target_frame,
         observer_frame,
@@ -377,26 +383,29 @@ impl Almanac {
     ))]
     fn py_transform_many<'py>(
         &self,
+        py: Python,
         target_frame: Frame,
         observer_frame: Frame,
         time_series: TimeSeries,
         ab_corr: Option<Aberration>,
     ) -> Vec<CartesianState> {
-        let mut states = time_series
-            .par_bridge()
-            .filter_map(|epoch| {
-                self.transform(target_frame, observer_frame, epoch, ab_corr)
-                    .map_or_else(
-                        |e| {
-                            eprintln!("{e}");
-                            None
-                        },
-                        |state| Some(state),
-                    )
-            })
-            .collect::<Vec<CartesianState>>();
-        states.sort_by(|state_a, state_b| state_a.epoch.cmp(&state_b.epoch));
-        states
+        py.allow_threads(|| {
+            let mut states = time_series
+                .par_bridge()
+                .filter_map(|epoch| {
+                    self.transform(target_frame, observer_frame, epoch, ab_corr)
+                        .map_or_else(
+                            |e| {
+                                eprintln!("{e}");
+                                None
+                            },
+                            |state| Some(state),
+                        )
+                })
+                .collect::<Vec<CartesianState>>();
+            states.sort_by(|state_a, state_b| state_a.epoch.cmp(&state_b.epoch));
+            states
+        })
     }
 
     /// Returns the provided state as seen from the observer frame, given the aberration.
@@ -425,10 +434,10 @@ impl Almanac {
     ///
     /// Refer to [transform_to] for details.
     ///
-    /// :type states: List[Orbit]
+    /// :type states: typing.List[Orbit]
     /// :type observer_frame: Frame
     /// :type ab_corr: Aberration, optional
-    /// :rtype: List[Orbit]
+    /// :rtype: typing.List[Orbit]
     #[pyo3(name = "transform_many_to", signature=(
         states,
         observer_frame,
@@ -436,25 +445,28 @@ impl Almanac {
     ))]
     fn py_transform_many_to(
         &self,
+        py: Python,
         states: Vec<CartesianState>,
         observer_frame: Frame,
         ab_corr: Option<Aberration>,
     ) -> Vec<CartesianState> {
-        let mut rslt = states
-            .par_iter()
-            .filter_map(|state| {
-                self.transform_to(*state, observer_frame, ab_corr)
-                    .map_or_else(
-                        |e| {
-                            println!("{e}");
-                            None
-                        },
-                        |state| Some(state),
-                    )
-            })
-            .collect::<Vec<CartesianState>>();
-        rslt.sort_by(|state_a, state_b| state_a.epoch.cmp(&state_b.epoch));
-        rslt
+        py.allow_threads(|| {
+            let mut rslt = states
+                .par_iter()
+                .filter_map(|state| {
+                    self.transform_to(*state, observer_frame, ab_corr)
+                        .map_or_else(
+                            |e| {
+                                println!("{e}");
+                                None
+                            },
+                            |state| Some(state),
+                        )
+                })
+                .collect::<Vec<CartesianState>>();
+            rslt.sort_by(|state_a, state_b| state_a.epoch.cmp(&state_b.epoch));
+            rslt
+        })
     }
 
     /// Returns the Cartesian state of the object as seen from the provided observer frame (essentially `spkezr`).
@@ -618,9 +630,9 @@ impl Almanac {
     ///
     /// **WARNING:** This function only performs the translation and no rotation _whatsoever_. Use the `transform_to` function instead to include rotations.
     ///
-    /// :type state: CartesianState
+    /// :type state: Orbit
     /// :type observer_frame: Frame
-    /// :rtype: CartesianState
+    /// :rtype: Orbit
     #[pyo3(name = "rotate_to", signature=(
         state,
         observer_frame,
