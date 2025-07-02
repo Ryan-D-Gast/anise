@@ -3,7 +3,7 @@
     "files.associations": {
         "functional": "cpp",
         "string": "cpp",
-        "*.rs": "cpp",
+        "*.rs": "rust",
         "array": "cpp",
         "bitset": "cpp",
         "string_view": "cpp",
@@ -12,6 +12,7 @@
         "span": "cpp",
         "iterator": "cpp",
         "type_traits": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "iostream": "cpp"
     }
 }
