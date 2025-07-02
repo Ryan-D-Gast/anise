@@ -1,0 +1,28 @@
+build-static-lib:
+    cargo build
+    cp ../target/cxxbridge/anise-cpp/src/main.rs.h src/main.rs.h
+
+cxxinstall:
+    cargo install cxxbridge-cmd
+
+# Build the C++ tests
+build-cpp-tests: build-static-lib
+    clang++ \
+    -Icpp/include \
+    -Icpp/tests/lib/googletest/googletest/include \
+    -Icpp/tests/lib/googletest/googlemock/include \
+    -Icpp/tests/lib/googletest/googletest \
+    -Icpp/tests/lib/googletest/googlemock \
+    -isystem src \
+    -o target/debug/cpp_tests cpp/tests/main.cpp cpp/src/blobstore.cpp \
+    cpp/tests/lib/googletest/googletest/src/gtest-all.cc \
+    cpp/tests/lib/googletest/googlemock/src/gmock-all.cc \
+    -Ltarget/debug -lanise -lpthread -ldl
+
+# Run the C++ tests
+test-cpp: build-cpp-tests
+    ./target/debug/cpp_tests
+
+# A command to run all tests
+test: test-cpp
+    cargo test    

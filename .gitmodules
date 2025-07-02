@@ -1,0 +1,3 @@
+[submodule "anise-cpp/cpp/tests/lib/googletest"]
+	path = anise-cpp/cpp/tests/lib/googletest
+	url = https://github.com/google/googletest.git
