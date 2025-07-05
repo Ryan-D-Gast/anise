@@ -1,6 +1,6 @@
 build-static-lib:
     cargo build
-    cp ../target/cxxbridge/anise-cpp/src/main.rs.h src/main.rs.h
+# cp ../target/cxxbridge/anise-cpp/src/main.rs.h src/main.rs.h
 
 cxxinstall:
     cargo install cxxbridge-cmd
@@ -13,6 +13,8 @@ build-cpp-tests: build-static-lib
     -Icpp/tests/lib/googletest/googlemock/include \
     -Icpp/tests/lib/googletest/googletest \
     -Icpp/tests/lib/googletest/googlemock \
+    -I../target/cxxbridge/ \
+    -I../anise-cpp/include \
     -isystem src \
     -o target/debug/cpp_tests cpp/tests/main.cpp cpp/src/blobstore.cpp \
     cpp/tests/lib/googletest/googletest/src/gtest-all.cc \
